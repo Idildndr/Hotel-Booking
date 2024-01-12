@@ -1,0 +1,77 @@
+
+{%  extends 'hotel/main.html'  %}
+{% load static %}
+
+{% block title %}{{ hotel.name }}{% endblock %}
+
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'hotel/css/detail.css' %}">
+<!-- Add this to your base template or specific template -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBc1pucfTu72V1k21qE01gClYeb3d96GyY&callback=initMap" defer></script>
+
+
+
+<div class="flex-container">
+
+
+<div class="felx item">
+<div class="card" style="width: 18rem;">
+    <img class="thumbnail card-img-top" src="{{ hotel.picture.url }}"  style="width: auto;">
+
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <div class="text">
+        <h1 class=" name ">{{ hotel.name }}</h1>
+        <p class="price"><strong> {{ hotel.price }} TL </strong></p>
+
+        <button style="border-radius: 10%;"  type="button" class="btn btn-success"><strong>{{ hotel.rating }}</strong></button>
+
+
+        <ul>
+            {% for amenity in hotel.amenities.all %}
+                
+                    <img class="" src="{{ amenity.icon_url.url }}">
+        
+                    {{ amenity.name }}
+            {% endfor %}
+        </ul>
+       
+    </div>  
+    </div>
+  </div>
+
+
+
+</div>
+
+
+<div class="flex-item">
+
+<div id="map" style="height: 400px; width: 600px;"></div>
+</div>
+<script>
+
+function initMap() {
+       var map = new google.maps.Map(document.getElementById('map'), {
+           center: { lat: {{ hotel.latitude|default:"0" }}, lng: {{ hotel.longitude|default:"0" }} },
+           zoom: 8
+       });
+
+       // Add a marker to the map
+       var marker = new google.maps.Marker({
+           position: { lat: {{ hotel.latitude|default:"0" }}, lng: {{ hotel.longitude|default:"0" }} },
+           map: map,
+           title: '{{ hotel.name }}'
+       });
+   }
+
+</script>
+
+
+</div>
+
+    <a href="{% url 'home' %}">Back to Hotel List</a>
+</div>
+{% endblock %}

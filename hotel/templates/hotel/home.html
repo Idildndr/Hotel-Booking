@@ -1,0 +1,45 @@
+
+{%  extends 'hotel/main.html'  %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'hotel/css/main.css' %}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons">
+
+
+
+
+<div class="row">
+    {% for hotel in hotels %}
+    <div class="col-lg-4">
+        <a href="{% url 'detail' hotel.id %}" class="box-link">
+            <div class="box-element product">
+                <!-- ... (existing content) ... -->
+                <img class="thumbnail" src="{{ hotel.picture.url }}">
+                <p>{{hotel.number_of_comments}} yorum </p>
+                <h6><strong>{{ hotel.name }}</strong></h6>
+                <hr>
+
+            {% if user.is_authenticated %}
+
+            <button type="button" class="btn btn-secondary" style="background-color: purple; border: none; color: white; padding: 10px;">
+                Üye Fıyatından Yararlanılabilir
+            </button>              {% else %}
+              <a href="{% url 'login' %}">
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+              <button type="button" class="btn btn-outline-primary">Üye Fiyatı için giriş yapın</button>
+            </a>
+              {% endif %}
+
+
+
+                <h4 style="display: inline-block; float: right"><strong>$ {{ hotel.price }}</strong></h4>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+
+
+    {% endblock %}
