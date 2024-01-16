@@ -16,7 +16,7 @@
         <a href="{% url 'detail' hotel.id %}" class="box-link">
             <div class="box-element product">
                 <!-- ... (existing content) ... -->
-                <img class="thumbnail" src="{{ hotel.picture.url }}">
+                <img class="thumbnail" src="{{ hotel.picture.url }}" style="width: 100%;" alt="{{ hotel.name }}">
                 <p style="margin-top: 10px;">{{hotel.number_of_comments}} yorum </p>
                 <h6><strong>{{ hotel.name }}</strong></h6>
 
