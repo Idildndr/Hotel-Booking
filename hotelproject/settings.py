@@ -31,6 +31,9 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
+SITE_ID = 1
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,8 +43,40 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'hotel'
+    'hotel',
+    'accounts',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'tempus_dominus',
 ]
+
+
+
+SOCIALACCOUNT_LOGIN_ON_GET=True
+
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend'
+    ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '710662883094-sbqt68tmfnrcoog865hfju81tq7cm84g.apps.googleusercontent.com',
+            'secret': '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',
+            'key': '',
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,6 +86,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
+
 ]
 
 ROOT_URLCONF = 'hotelproject.urls'

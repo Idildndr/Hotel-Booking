@@ -1,43 +1,59 @@
+{% extends 'hotel/main.html' %} {% load static %}
 
-{%  extends 'hotel/main.html'  %}
-{% load static %}
+{% block title %}{{ hotel.name}}{% endblock %}
+ {% block content %}
 
-{% block title %}{{ hotel.name }}{% endblock %}
-
-
-{% block content %}
-
-<link rel="stylesheet" type="text/css" href="{% static 'hotel/css/detail.css' %}">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{% static 'hotel/css/detail.css' %}"
+/>
 <!-- Add this to your base template or specific template -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBc1pucfTu72V1k21qE01gClYeb3d96GyY&callback=initMap" defer></script>
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBc1pucfTu72V1k21qE01gClYeb3d96GyY&callback=initMap"
+  defer
+></script>
 
-
-
+<!--
 <div class="flex-container">
 
 
 <div class="felx item">
-<div class="card" style="width: 18rem;">
-    <img class="thumbnail card-img-top" src="{{ hotel.picture.url }}"  style="width: auto;">
+<div class="card" style="width: 20rem; height: fit-content;  padding: 10px;">
+    <img  style="width: 18rem;" class="thumbnail card-img-top" src="{{ hotel.picture.url }}"  style="width: auto;">
 
     <div class="card-body">
-      <h5 class="card-title">Card title</h5>
       <div class="text">
         <h1 class=" name ">{{ hotel.name }}</h1>
-        <p class="price"><strong> {{ hotel.price }} TL </strong></p>
+
+        {%if hotel.has_discount %}
+
+        <h3 class="price"> <s> <strong> {{ hotel.price }} ₺ </strong> </s></h3>
+
+        <h3 class="price" style="color: red;"><strong> {{ hotel.calculate_discounted_price }} ₺ </strong></h3>
+        {% else %}
+        <h3 class="price"><strong> {{ hotel.price }} ₺ </strong></h3>
+
+        {% endif %}
 
         <button style="border-radius: 10%;"  type="button" class="btn btn-success"><strong>{{ hotel.rating }}</strong></button>
 
 
-        <ul>
+    <div class="amenity-container" style="display: grid; "> 
+
+        <div class="amenity-item">
             {% for amenity in hotel.amenities.all %}
                 
                     <img class="" src="{{ amenity.icon_url.url }}">
-        
                     {{ amenity.name }}
+                    <br>
+        
+                    
             {% endfor %}
-        </ul>
-       
+        </div>
+    </div>
+
+
     </div>  
     </div>
   </div>
@@ -49,29 +65,96 @@
 
 <div class="flex-item">
 
-<div id="map" style="height: 400px; width: 600px;"></div>
+<div id="map" style="height: 394px; width: 600px;"></div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <h3 class="card-title">{{ hotel.description }}</h3>
+    </div>
 </div>
+
+
+-->
+
+<div class="col-lg-10 mb-4">
+    <div class="box-element product">
+        <div class="row">
+            <div class="col-md-4">
+                <!-- Image column -->
+                <img style="width: 18rem" class="thumbnail card-img-top" src="{{ hotel.picture.url }}" style="width: auto" />
+                <h1 class="name">{{ hotel.name }}</h1>
+
+                {% if hotel.has_discount %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="price">
+                                <s><strong>{{ hotel.price }} ₺</strong></s>
+                            </h3>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="discount-info">
+                                <button style="border-radius: 10%; padding: 1%;" type="button" class="btn btn-danger">
+                                    <strong>%{{ hotel.discount_rate }} indirim</strong>
+                                </button>
+                                <h3 class="discounted-price" style="color: red">
+                                    <strong>{{ hotel.calculate_discounted_price }} ₺</strong>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <h3 class="price">
+                        <strong>{{ hotel.price }} ₺</strong>
+                    </h3>
+                {% endif %}
+
+                <button style="border-radius: 10%" type="button" class="btn btn-success">
+                    <strong>{{ hotel.rating }}</strong>
+                </button>
+
+                <div class="amenity-container" style="display: grid; grid-template-columns: repeat(2, 1fr)">
+                    {% for amenity in hotel.amenities.all %}
+                        <div class="amenity-item">
+                            <img class="" src="{{ amenity.icon_url.url }}" />
+                            {{ amenity.name }}
+                            <br />
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if not hotel.has_discount and user.is_authenticated %}
+                <h3 class="mt-4 price" style="color: deepskyblue">
+                    <strong> Üye Fıyatı {{ hotel.calculate_member_price }} ₺ </strong>
+                </h3>
+            {% endif %}
+            </div>
+
+            <div class="col-md-8">
+                <!-- Details column -->
+
+                <div class="col-md-9 mb-4" id="map" style="height: 394px; margin-left: 50px"></div>
+
+                <p class="card-title">{{ hotel.description }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
 
-function initMap() {
-       var map = new google.maps.Map(document.getElementById('map'), {
-           center: { lat: {{ hotel.latitude|default:"0" }}, lng: {{ hotel.longitude|default:"0" }} },
-           zoom: 8
-       });
+  function initMap() {
+         var map = new google.maps.Map(document.getElementById('map'), {
+             center: { lat: {{ hotel.latitude|default:"0" }}, lng: {{ hotel.longitude|default:"0" }} },
+             zoom: 12
+         });
 
-       // Add a marker to the map
-       var marker = new google.maps.Marker({
-           position: { lat: {{ hotel.latitude|default:"0" }}, lng: {{ hotel.longitude|default:"0" }} },
-           map: map,
-           title: '{{ hotel.name }}'
-       });
-   }
-
+         // Add a marker to the map
+         var marker = new google.maps.Marker({
+             position: { lat: {{ hotel.latitude|default:"0" }}, lng: {{ hotel.longitude|default:"0" }} },
+             map: map,
+             title: '{{ hotel.name }}'
+         });
+     }
 </script>
-
-
-</div>
-
-    <a href="{% url 'home' %}">Back to Hotel List</a>
-</div>
 {% endblock %}

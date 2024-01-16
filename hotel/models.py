@@ -1,4 +1,6 @@
+from decimal import Decimal, ROUND_HALF_UP
 from django.db import models
+from django.contrib import admin
 
 class Amenity(models.Model):
     name = models.CharField(max_length=255)
@@ -19,15 +21,50 @@ class Hotel(models.Model):
     guest_count = models.IntegerField()
     longitude = models.FloatField()
     latitude = models.FloatField()
-    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    has_discount = models.BooleanField(default=False)
+    discount_rate = models.IntegerField(default=0)
 
     def calculate_discounted_price(self):
-        discount_amount = (self.discount_percentage / 100) * float(self.price)
-        discounted_price = float(self.price) - discount_amount
-        return round(discounted_price, 2)
+        if self.has_discount:
+            discount_amount = self.discount_rate * self.price / 100
+            discounted_price = self.price - discount_amount
+            return discounted_price.quantize(Decimal('0.000'), rounding=ROUND_HALF_UP)
+        else:
+            return self.price
 
+
+    def calculate_member_price(self):
+        discount_percentage = Decimal('10')
+        price = Decimal(self.price)
+        discount_amount = (discount_percentage / Decimal('100')) * price
+        discounted_price = price - discount_amount
+        rounded_price = discounted_price.quantize(Decimal('0.000'), rounding=ROUND_HALF_UP)
+        return rounded_price
+    
+    
     def __str__(self):
         return self.name
     
+class Availability(models.Model):
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    def __str__(self):
+        return f"{self.hotel.name} - {self.start_date} to {self.end_date}"
     
-    
+class AvailabilityAdmin(admin.ModelAdmin):
+    list_display = ('hotel', 'formatted_start_date', 'formatted_end_date')
+
+    def formatted_start_date(self, obj):
+        return obj.start_date.strftime('%d.%m.%Y')
+
+    def formatted_end_date(self, obj):
+        return obj.end_date.strftime('%d.%m.%Y')
+
+    formatted_start_date.short_description = 'Start Date'
+    formatted_end_date.short_description = 'End Date'
+
+
+
+# Register the modified AvailabilityAdmin

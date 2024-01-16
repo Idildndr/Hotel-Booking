@@ -7,9 +7,8 @@ from django.conf import settings
 urlpatterns = [
     path('', views.home, name= "home"),
     path('hotels/<int:hotel_id>/', views.hotelList, name='detail'),
-    path('test/',views.test,name='test')
+    path('search/', views.hotel_search, name='search'),
 
-    
 ]
 
 

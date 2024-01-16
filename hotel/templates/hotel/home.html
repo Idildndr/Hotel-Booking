@@ -8,21 +8,39 @@
 
 
 
-
 <div class="row">
+  <a href="#" class="box-link" onclick="searchHotel('{{ hotel.city }}', {{ hotel.guest_count }}, true)">
+  </a>
     {% for hotel in hotels %}
     <div class="col-lg-4">
         <a href="{% url 'detail' hotel.id %}" class="box-link">
             <div class="box-element product">
                 <!-- ... (existing content) ... -->
                 <img class="thumbnail" src="{{ hotel.picture.url }}">
-                <p>{{hotel.number_of_comments}} yorum </p>
+                <p style="margin-top: 10px;">{{hotel.number_of_comments}} yorum </p>
                 <h6><strong>{{ hotel.name }}</strong></h6>
+
+        {%if hotel.has_discount %}
+
+        <h4 style="display: inline-block; float: left"> <strong> {{ hotel.price }} ₺</strong> </h4>
+
+        <button style="border-radius: 10%; padding: 1%;" type="button" class="btn btn-danger">
+          <strong>%{{ hotel.discount_rate }} indirim</strong>
+      </button>       
+       {% else %}
+
+        <h4 style="display: inline-block; float: left"><strong> {{ hotel.price }} ₺</strong></h4>
+        <button style="border-radius: 10%; background-color: white; border: none; padding: 1%;" type="button" class="btn btn-danger">
+          <strong>%{{ hotel.discount_rate }} indirim</strong>
+      </button> 
+        {% endif %}
+
                 <hr>
+                
 
             {% if user.is_authenticated %}
 
-            <button type="button" class="btn btn-secondary" style="background-color: purple; border: none; color: white; padding: 10px;">
+            <button type="button" class="btn btn-secondary" style="background-color: purple; border: none; color: white; padding: 6px;">
                 Üye Fıyatından Yararlanılabilir
             </button>              {% else %}
               <a href="{% url 'login' %}">
@@ -33,13 +51,19 @@
 
 
 
-                <h4 style="display: inline-block; float: right"><strong>$ {{ hotel.price }}</strong></h4>
+
+
             </div>
         </a>
     </div>
     {% endfor %}
+  
 </div>
 
 
 
     {% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+ 
